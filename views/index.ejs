@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="module">
+        const form = document.getElementById('form');
+        const usuario = document.getElementById('usuario');
+        const password = document.getElementById('password');
+        const resultado = document.getElementById('resultado');
+        let respuesta = '';
+
+        form.addEventListener('submit', (e) => {  
+    e.preventDefault();  
+    
+    fetch('http://localhost:3000/user/login', {  
+        method: 'POST',  
+        headers: {  
+            "Content-Type": "application/json"  
+        },  
+        body: JSON.stringify({  
+            user_name: usuario.value,  
+            user_password: password.value  
+        })  
+    })  
+    .then(response => {  
+        if (!response.ok) {  
+            throw new Error('Error en la respuesta del servidor');  
+        }  
+        return response.text(); 
+    })  
+    .then(data => {  
+        let resultado;  
+
+      
+        try {  
+            resultado = JSON.parse(data); 
+        } catch (e) {  
+            resultado = data; 
+        }  
+
+   
+        if (typeof resultado === 'object' && resultado.user_name) {  
+           
+            const { user_name } = resultado;  
+            resultado.innerHTML = `Bienvenido ${user_name}`;  
+            window.location.href = '/logeado';  
+        } else if (typeof resultado === 'string') {  
+       
+            resultado.innerHTML = resultado;  
+        } else {  
+           
+            resultado.innerHTML = `Error inesperado. ${data}`;  
+        }  
+    })  
+    .catch(error => {  
+        console.error('Error:', error);  
+        resultado.innerHTML = 'Error al iniciar sesión';  
+    });  
+});
+    </script> 
+    <style>
+        form {
+            width: 300px;
+            height: 150px;
+            margin: auto;
+            border: 1px solid black;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <form id="form">
+        <input type="text" id="usuario" placeholder="Usuario" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit">Iniciar</button>
+    </form>
+    <div>
+        <h1 id="resultado"></h1>
+    </div>
+</body>
+</html>
