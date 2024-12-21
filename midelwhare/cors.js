@@ -6,6 +6,7 @@ export const CORS = () => cors({
             'http://localhost:3000',
             'http://localhost:5000',
             'http://127.0.0.1:5500',
+            'https://node-js-user-mysql-production.up.railway.app'
         ];
         if (PUERTOS.includes(origin) || !origin) {
             callback(null, true); // Permitir el origen
