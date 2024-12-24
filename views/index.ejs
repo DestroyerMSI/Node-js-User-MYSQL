@@ -1,87 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script type="module">
-        const form = document.getElementById('form');
-        const usuario = document.getElementById('usuario');
-        const password = document.getElementById('password');
-        const resultado = document.getElementById('resultado');
-        let respuesta = '';
+        const formLogin = document.getElementById('formLogin');
+        const formRegister = document.getElementById('formRegister');
+        const usuarioLogin = document.getElementById('usuarioLogin');
+        const passwordLogin = document.getElementById('passwordLogin');
+        const resultadoLogin = document.getElementById('resultadoLogin');
+        const usuarioRegister = document.getElementById('usuarioRegister');
+        const passwordRegister = document.getElementById('passwordRegister');
+        const resultadoRegister = document.getElementById('resultadoRegister');
 
-        form.addEventListener('submit', (e) => {  
-    e.preventDefault();  
-    
-    fetch('http://localhost:3000/user/login', {  
-        method: 'POST',  
-        headers: {  
-            "Content-Type": "application/json"  
-        },  
-        body: JSON.stringify({  
-            user_name: usuario.value,  
-            user_password: password.value  
-        })  
-    })  
-    .then(response => {  
-        if (!response.ok) {  
-            throw new Error('Error en la respuesta del servidor');  
-        }  
-        return response.text(); 
-    })  
-    .then(data => {  
-        let resultado;  
+        formLogin.addEventListener('submit', (e) => {  
+            e.preventDefault();  
+            fetch('http://localhost:3000/user/login', {  
+                method: 'POST',  
+                headers: {  
+                    "Content-Type": "application/json"  
+                },  
+                body: JSON.stringify({  
+                    user_name: usuarioLogin.value,  
+                    user_password: passwordLogin.value  
+                })  
+            })  
+            .then(response => {  
+                if (!response.ok) {  
+                    throw new Error('Error en la respuesta del servidor');  
+                }  
+                return response.text(); 
+            })  
+            .then(data => {  
+                let resultado;  
+                try {  
+                    resultado = JSON.parse(data); 
+                } catch (e) {  
+                    resultado = data; 
+                }  
+                if (typeof resultado === 'object' && resultado.user_name) {  
+                    const { user_name } = resultado;  
+                    resultadoLogin.innerHTML = `Bienvenido ${user_name}`;  
+                    window.location.href = '/logeado';  
+                } else if (typeof resultado === 'string') {  
+                    resultadoLogin.innerHTML = resultado;  
+                } else {  
+                    resultadoLogin.innerHTML = `Error inesperado. ${data}`;  
+                }  
+            })  
+            .catch(error => {  
+                console.error('Error:', error);  
+                resultadoLogin.innerHTML = 'Error al iniciar sesión';  
+            });  
+        });
 
-      
-        try {  
-            resultado = JSON.parse(data); 
-        } catch (e) {  
-            resultado = data; 
-        }  
-
-   
-        if (typeof resultado === 'object' && resultado.user_name) {  
-           
-            const { user_name } = resultado;  
-            resultado.innerHTML = `Bienvenido ${user_name}`;  
-            window.location.href = '/logeado';  
-        } else if (typeof resultado === 'string') {  
-       
-            resultado.innerHTML = resultado;  
-        } else {  
-           
-            resultado.innerHTML = `Error inesperado. ${data}`;  
-        }  
-    })  
-    .catch(error => {  
-        console.error('Error:', error);  
-        resultado.innerHTML = 'Error al iniciar sesión';  
-    });  
-});
+        formRegister.addEventListener('submit', (e) => {  
+            e.preventDefault();  
+            fetch('http://localhost:3000/user/register', {  
+                method: 'POST',  
+                headers: {  
+                    "Content-Type": "application/json"  
+                },  
+                body: JSON.stringify({  
+                    user_name: usuarioRegister.value,  
+                    user_password: passwordRegister.value  
+                })  
+            })  
+            .then(response => {  
+                if (!response.ok) {  
+                    throw new Error('Error en la respuesta del servidor');  
+                }  
+                return response.text(); 
+            })  
+            .then(data => {  
+                let resultado;  
+                try {  
+                    resultado = JSON.parse(data); 
+                } catch (e) {  
+                    resultado = data; 
+                }  
+                if (typeof resultado === 'string') {  
+                    resultadoRegister.innerHTML = resultado;  
+                } else {  
+                    resultadoRegister.innerHTML = `Registro exitoso. Bienvenido ${resultado.user_name}`;  
+                }  
+            })  
+            .catch(error => {  
+                console.error('Error:', error);  
+                resultadoRegister.innerHTML = 'Error al registrarse';  
+            });  
+        });
     </script> 
     <style>
-        form {
-            width: 300px;
-            height: 150px;
-            margin: auto;
-            border: 1px solid black;
-            border-radius: 12px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        form {
+            width: 300px;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        h1 {
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <form id="form">
-        <input type="text" id="usuario" placeholder="Usuario" required>
-        <input type="password" id="password" placeholder="Contraseña" required>
+    <form id="formLogin">
+        <h2>Iniciar Sesión</h2>
+        <input type="text" id="usuarioLogin" placeholder="Usuario" required>
+        <input type="password" id="passwordLogin" placeholder="Contraseña" required>
         <button type="submit">Iniciar</button>
+        <h1 id="resultadoLogin"></h1>
     </form>
-    <div>
-        <h1 id="resultado"></h1>
-    </div>
+
+    <form id="formRegister">
+        <h2>Registro</h2>
+        <input type="text" id="usuarioRegister" placeholder="Usuario" required>
+        <input type="password" id="passwordRegister" placeholder="Contraseña" required>
+        <button type="submit">Registrar</button>
+        <h1 id="resultadoRegister"></h1>
+    </form>
 </body>
 </html>
